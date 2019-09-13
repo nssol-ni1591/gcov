@@ -24,7 +24,7 @@ sub warning
 	return;
 }
 
-sub make_projllist {
+sub make_projlist {
 	my ($path) = @_;
 
 	open(FILE, "<".path, "r") or die "Error: $!";
@@ -39,7 +39,8 @@ sub make_projllist {
 		next if !$_;
 		next if substr($_, 0, 1) eq "#";
 
-		if (/^([\w\/]*)\t([\S ]*)\t([\S ]*)\t([\S ]*)\t([\S ]*)\t(\w\.\-]*$/) {
+		if (/^([\w\/]*)\t([\S ]*)\t([\S ]*)\t([\S ]*)\t([\S ]*)\t(\w\.\-]*)$/) {
+
 			$unit = $1
 			$category = ($2, $3, $4, $5);
 			$component = $6;
@@ -130,24 +131,35 @@ sub file_csv {
 	while (<WC>) {
 		chomp;
 		$lines++;
-		if (/^\s\/\*.*\*\/\s*$/) {
-debug "$name:$lines:$_";
-		}
-		elsif (!$comment && /^\s*\/\*$/) {
-			$comment = 1;
-debug "$name:$lines:$_";
-		}
-		elsif ($comment && /^.*\*\/\s*$/) {
-			$comment = 0;
-debug "$name:$lines:$_";
-		}
-		elif ($comment) {
-debug "$name:$lines:$_";
-		}
-		elsif (/^(#.*|\s*)([{}]\s*|\/\/.*)?$/) {
-debug "$name:$lines:$_";
+		if (!$comment) {
+			if (/^\s\/\*.*\*\/\s*$/) {
+debug "(1)$name:$lines:$_";
+				next;
+			}
+			elsif (/^\s*(#\/\/)(.*)?$/) {
+debug "(2)$name:$lines:$_";
+				next;
+			}
+			elsif (/^\s*([{}])?\s*$/) {
+debug "(3)$name:$lines:$_";
+				next;
+			}
+			elsif (/^\s*\/\*(.*)$/) {
+				$comment = 1;
+debug "(4)$name:$lines:$_";
+				next;
+			}
 		}
 		else {
+			if (/^.*\*\/(\S*)?$/) {
+				$comment = 0;
+debug "(8)$name:$lines:$_";
+				next;
+			}
+			else {
+debug "(9)$name:$lines:$_";
+				next;
+			}
 			$execs++;
 		}
 	}
