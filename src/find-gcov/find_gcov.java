@@ -18,7 +18,7 @@ import java.util.stream.Stream;
 
 public class find_gcov {
 
-	private Map<String, Pojo> CATELILST = new HashMap<>();
+	private Map<String, Pojo> CATELIST = new HashMap<>();
 	private Pojo CACHE_CATEGORY;
 	private String CACHE_UNIT = null;
 
@@ -46,7 +46,7 @@ public class find_gcov {
 //		print(msg);
 		return;
 	}
-	private static void warning(String msg) [
+	private static void warning(String msg) {
 		System.err.println(msg);
 	}
 
@@ -84,13 +84,13 @@ public class find_gcov {
 			debug("path_to_category: unit=[" + unit + "] category=[" + String.join(" ", category) + "]");
 			return CACHE_CATEGORY;
 		}
-		Optional>String> rc = CATELIST.keySet().stream()
+		Optional<String> rc = CATELIST.keySet().stream()
 			.filter(key -> path.contains(key + "/"))
 			.findFirst();
 		if (rc.isPresent()) {
 			CACHE_CATEGORY = CATELIST.get(rc.get());
 			CACHE_UNIT = path.substring(0, path.indexOf(rc.get()) + rc.get().length());
-			debug("path_to_category: unit=[" + CACHE_UNIT + "] category=[" CACHE_CATEGORY + "]");
+			debug("path_to_category: unit=[" + CACHE_UNIT + "] category=[" + CACHE_CATEGORY + "]");
 			return CACHE_CATEGORY;
 		}
 		warning("category not found. (path=[" + path + "])");
@@ -112,7 +112,7 @@ public class find_gcov {
 				.filter(rec -> {
 					Matcher reqult3 = PATTERN3.matcher(rec);
 					if (result3.find()) {
-						function = result3,group(1);
+						function = result3.group(1);
 						Matcher result = PATTERN6.matcher(function);
 						if (result.find()) {
 							clearFunction();
@@ -132,7 +132,7 @@ public class find_gcov {
 							Pojo pojo = path_to_category(path);
 							debug("gcov_csv: path=[" + path + "] category=[" + category + "]");
 							double val = lines * coverage  / 100;
-							int avail = ((int)val) + (val != ((int)val) ? : 0);
+							int avail = ((int)val) + (val != ((int)val) ? 1 : 0);
 							String[] array = {
 								pojo.getComponent()
 								, path
@@ -175,7 +175,7 @@ public class find_gcov {
 			debug("file_csv: path=[" + path + "] category=[" + pojo + "]");
 			String[] array = {
 				pojo.getComponent()
-				, path,
+				, path
 				, "-"
 				, "0.0"
 				, String.valueOf(lines)
@@ -267,9 +267,10 @@ public class find_gcov {
 
 	public class CommentState<K, V> extends AbstractMap.SimpleImmutableEntry<K, V> {
 
+		private static final long serialVersionUID = 1L;
 		private LineManager parent;
 
-		public CommentState(LineManager parent, K, key, V value) {
+		public CommentState(LineManager parent, K key, V value) {
 			super(key, value);
 			this.paremt = parent;
 		}
