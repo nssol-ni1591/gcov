@@ -2,7 +2,7 @@
 # -*- vi: set ts=4 sts=4 sw=4 : -*-
 
 use strict;
-use warning;
+#use warning;
 use File::Basename;
 
 our %CATELIST = ();
@@ -17,7 +17,7 @@ sub debug {
 	return;
 }
 
-sub warning
+sub warning {
 	my ($msg) = @_;
 #	print "Warning: $msg\n";
 	print STDERR "Warning: $msg\n";
@@ -27,7 +27,7 @@ sub warning
 sub make_projlist {
 	my ($path) = @_;
 
-	open(FILE, "<".path, "r") or die "Error: $!";
+	open(FILE, "<".$path, "r") or die "Error: $!";
 	while (<FILE>) {
 		chomp;
 
@@ -40,19 +40,18 @@ sub make_projlist {
 		next if substr($_, 0, 1) eq "#";
 
 		if (/^([\w\/]*)\t([\S ]*)\t([\S ]*)\t([\S ]*)\t([\S ]*)\t(\w\.\-]*)$/) {
-
-			$unit = $1
-			$category = ($2, $3, $4, $5);
+			$unit = $1;
+			@category = ($2, $3, $4, $5);
 			$component = $6;
 		}
 		else {
-			warning "mapping file format. (rec=[$rec])";
+			warning "mapping file format. (rec=[$_])";
 			next;
 		}
 
 #debug "make_projlist: unit=[$unit] category=[@category] component=[$component]";
 		push @category, $component;
-		@CATELIST[{$unit}] = @category;
+		@{CATELIST{$unit}} = @category;
 	}
 	close FILE;
 }
@@ -62,12 +61,12 @@ sub path_to_category {
 
 	if ($CACHE_UNIT ne "" and $path =~ /^$CACHE_UNIT/) {
 #debug "path_to_category: unit=[$CACHE_UNIT] category=[@CAHCE_CATEGORY] cached";
-		return CACHE_CATEGORY;
+		return @CACHE_CATEGORY;
 	}
 	foreach my $unit (keys %CATELIST) {
-		$pos = index($path, $unit."/");
-		if (pos > 0) {
-			@CAHE_CATEGORY = $CATELIST[{$unit}];
+		my $pos = index($path, $unit."/");
+		if ($pos > 0) {
+			@CACHE_CATEGORY = @{$CATELIST{$unit}};
 			$CACHE_UNIT = $unit;
 debug "path_to_category: unit=[$CACHE_UNIT] category=[@CACHE_CATEGORY]";
 			return @CACHE_CATEGORY;
@@ -83,38 +82,37 @@ sub gcov_csv {
 
 	my $function;
 	my $gcov = "LANG=C gcov -r -p -n -f $path | c++filt |";
-	gcov = subprocess.Popen(cmd, shell = True, stdout = subprocess.PIPE);
 	open GCOV, $gcov, or die "Error: $!";
 	while (<GCOV>) {
 		chomp;
 		next if (/^$/);
-debug "gcov_csv: rec=[$rec]";
+debug "gcov_csv: rec=[$_]";
 		if (/^Function '(.*)'$/) {
 			$function = $1;
 			if (/^([\w]* )*([\w\*:&]* )?(_|std::)/) {
 				$function = "";
 			}
 		}
-		elif (/^Lines executed:([\d\.]+)% ([\d]+)$/) {
+		elsif (/^Lines executed:([\d\.]+)% ([\d]+)$/) {
 debug "gcov_csv: function=[$function] coverage=[$1] lines=[$2]";
 			my ($coverage, $lines) = ($1, $2);
 			if ($function ne "") {
-				my $category = path_to_category($path);
-debug "gcov_csv: path=[$path] category=[$category]";
+				my @category = path_to_category($path);
+debug "gcov_csv: path=[$path] category=[@category]";
 				my $val = $lines * $coverage / 100;
 				my $avail = int($val) + ($val != int($val));
-				print join("\t", @category))."\t$path\t$function\t$coverage\t$lines\t$avail\n";
+				print join("\t", @category)."\t$path\t$function\t$coverage\t$lines\t$avail\n";
 				$function = "";
 			}
 		}
-		elif (/^File '(.*)'$/) {
+		elsif (/^File '(.*)'$/) {
 			$function = "";
 		}
-		elif (/No executable line/) {
+		elsif (/No executable line/) {
 			$function = "";
 		}
 		else {
-			warning "gcov format. (rec=[$rec])";
+			warning "gcov format. (rec=[$_])";
 		}
 	}
 }
@@ -122,12 +120,12 @@ debug "gcov_csv: path=[$path] category=[$category]";
 sub file_csv {
 	my ($path) = @_;
 
-	my $name = basename $file;
+	my $name = basename $path;
 	my $comment = 0;
 	my $execs = 0;
 	my $lines = 0;
 
-	open WC, "<".$file or die "Error: $!";
+	open WC, "<".$path or die "Error: $!";
 	while (<WC>) {
 		chomp;
 		$lines++;
@@ -164,8 +162,8 @@ debug "(9)$name:$lines:$_";
 		}
 	}
 	close WC;
-	my @category = path_to_category $file;
-	print join("\t", @category)."\t$file\t-\t0.0\t$execs\t0\n";
+	my @category = path_to_category $path;
+	print join("\t", @category)."\t$path\t-\t0.0\t$execs\t0\n";
 }
 
 sub find_gcov {
@@ -176,9 +174,9 @@ sub find_gcov {
 	while (<FIND>) {
 		chomp;
 		my $gcno = $_;
-		my ($path = $gcno) =~ s/\.gcno$//g;
-		my $gcda = "$path.gcda";
-		file = "";
+		(my $path = $gcno) =~ s/\.gcno$//g;
+		my $gcda = $path.".gcda";
+		my $file = "";
 		foreach my $ext ( ".c", ".cc", ".cpp" ) {
 			if (-e $path.$ext) {
 				$file = $path.$ext;
@@ -187,16 +185,17 @@ sub find_gcov {
 		}
 
 debug "find_gcno: gcno=[$gcno] gcda=[$gcda] file=[$file]";
-		if (-e gcda) {
+		if (-e $gcda) {
 			if ($file eq "") {
 				$file = $path.".o";
 			}
-			gcov_csv file;
+			gcov_csv $file;
 		}
-		elif ($file ne "") {
-			file_csv file;
+		elsif ($file ne "") {
+			file_csv $file;
 		}
 	}
+	close FIND;
 }
 
 sub main {
