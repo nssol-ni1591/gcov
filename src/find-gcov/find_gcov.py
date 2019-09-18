@@ -39,7 +39,7 @@ class find_gcov :
 	def make_projlist(self, path) :
 		with open(path, "r") as ins :
 			for rec in ins :
-				rec = rec.rstrip("\n")
+				rec = rec.strip()
 
 				self.debug("make_projlist: rec=[%s] % rec)
 				if len(rec) > 0 and rec[0] == "#" :
@@ -118,30 +118,44 @@ class find_gcov :
 		execs = 0
 		lines = 0
 
-		with open(file, "r") as wc :
-			for s = s.rstrip() :
+		with open(path, "r") as wc :
+			for s = s.rstrip("\n") :
 				lines += 1
-				if self.PATTERN7.match(s) :
-					self.debug("%s:%s:%s" % (name, lines, s))
-				elif comment == 0 and self.PATTERN8.match(s) :
-					comment = 1
-					self.debug("%s:%s:%s" % (name, lines, s))
-				elif comment == 1 and self.PATTERN9.match(s) :
-					comment = 0
-					self.debug("%s:%s:%s" % (name, lines, s))
-				elif comment == 1 :
-					self.debug("%s:%s:%s" % (name, lines, s))
-				elif self.PATTERN10.match(s) :
-					self.debug("%s:%s:%s" % (name, lines, s))
+				if not comment :
+					if self.PATTERN7.match(s) :
+						self.debug("%s:%s:%s" % (name, lines, s))
+						continue
+					elif self.PATTERN10.match(s) :
+						self.debug("%s:%s:%s" % (name, lines, s))
+						continue
+					elif self.PATTERN11.match(s) :
+						self.debug("%s:%s:%s" % (name, lines, s))
+						continue
+					else :
+						result8 = self.PATTERN8.match(s)
+						if result8 :
+							comment = 1
+							if not result8.group(1) :
+								self.debug("%s:%s:%s" % (name, lines, s))
+								continue
 				else :
-					execs += 1
-		category = self.path_to_category(file)
-		print "%s\t%s\t-\t0.0\t%d\t0" % ("\t".join(category), file, execs)
+					result9 = self.PATTERN9.match(s)
+					if result9 :
+						comment = 0
+						if not result9.group(1) :
+							self.debug("%s:%s:%s" % (name, lines, s))
+							continue
+					else :
+						self.debug("%s:%s:%s" % (name, lines, s))
+						continue
+				execs += 1
+		category = self.path_to_category(path)
+		print "%s\t%s\t-\t0.0\t%d\t0" % ("\t".join(category), path, execs)
 
 	def find_gcov(self, dir) :
 		find = subprocess([ "find", dir, "-name", "*.gcno" ]. stdout=subprocess.PIPE)
 		for rec in iter(find.stdout.readline, b'') :
-			gcno = rec.strip("\n")
+			gcno = rec.strip()
 			path = gcno[0 : -5]
 			gcda = path + ".gcda"
 			file = ""
