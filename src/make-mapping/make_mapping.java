@@ -283,7 +283,7 @@ public class make_mapping {
 
 	public static void main(String[] argv) {
 		if (argv.length != 2) {
-			print("usage: java %s complist topdir\n", "make_mapping");
+			print("usage: java %s complist topdir", "make_mapping");
 			System.exit(1);
 		}
 		new make_mapping(argv);
