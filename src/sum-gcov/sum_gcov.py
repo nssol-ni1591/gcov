@@ -67,12 +67,12 @@ class sum_gcov :
 					execs = int(result.group(10))
 
 					self.debug("sum_tsv: system=[%s] subsystem=[%s] group=[%s] service=[%s] component=[%s] file=[%s] lines=[%s] execs=[%s]"
-						% (system, subsystem, group, service, component, file, lines, execs)
+						% (system, subsystem, group, service, component, file, lines, execs))
 
-					if self.MODE == "system" and system = sum_system
-					 or self.MODE == "subsystem" and subsystem = sum_subsystem
-					 or self.MODE == "group" and group = sum_group
-					 or self.MODE == "servicve" and service = sum_service
+					if self.MODE == "system" and system == sum_system \
+					 or self.MODE == "subsystem" and subsystem == sum_subsystem \
+					 or self.MODE == "group" and group == sum_group \
+					 or self.MODE == "service" and service == sum_service \
 					:
 						sum_lines += lines
 						sum_execs += execs
@@ -87,7 +87,7 @@ class sum_gcov :
 						sum_lines = lines
 						sum_execs = execs
 				else:
-					warning("tsv format. (rec=[%s])" % rec))
+					warning("tsv format. (rec=[%s])" % rec)
 		INS.close
 		print_sum(sum_system, sum_subsystem, sum_group, sum_service, sum_lines, sum_execs)
 
@@ -95,7 +95,7 @@ class sum_gcov :
 		if ((len(argv) < 3)
 		 or (argv[1] != "service" and argv[1] != "group" and argv[1] != "subsystem" and argv[1] != "system")) :
 			print "usage: python %s [service|group|subsystem|system] gcov.tsv ..." % os.path.basename(argv[0])
-			system.exit(1)
+			sys.exit(1)
 
 		self.MODE = argv[1]
 		print "システムブロック\tサブシステム\tサービス群\tサービス\t対象行数\t実行行数\カバレッジ"

@@ -8,7 +8,7 @@ import re
 import subprocess
 import sys
 
-class category_component {
+class category_component :
 
 	category = []
 	component = ""
@@ -22,9 +22,9 @@ class category_component {
 
 	def equals_categories(self, category) :
 		rc = category[0] == category[0] \
-			&& category[1] == category[1] \
-			&& category[2] == category[2] \
-			&& category[3] == category[3]
+			and category[1] == category[1] \
+			and category[2] == category[2] \
+			and category[3] == category[3]
 		return rc
 
 	def get_component(self) :
@@ -37,7 +37,7 @@ class category_component {
 class make_mapping :
 
 	STATIC_MAPPING = {
-		"..." => "...",
+		"..." : "...",
 	}
 
 	SKIP_COMPONENTS = [
@@ -48,7 +48,7 @@ class make_mapping :
 	PATTERN2 = re.compile("^([\S ]*)\t([\S ]*)\t([\S ]*)\t([\S ]*)\t([\w\.-]*)\t*$")
 	PATTERN3 = re.compile("^\S*\.(sh|adf|sts|ear|jar)$")
 
-	def degbug(selt. msg) :
+	def degbug(self, msg) :
 #		print msg
 		return
 
@@ -67,7 +67,7 @@ class make_mapping :
 				return True
 		return False
 
-	def check_duplicate_unit(selt, list. unit, component, category) :
+	def check_duplicate_unit(selt, list, unit, component, category) :
 		if list.get(unit) :
 			if component == list[unit].get_component() :
 				if not list[unit].equals_categories(category) :
@@ -78,11 +78,11 @@ class make_mapping :
 			if not list[unit].equlas_categories(category) :
 				p1 = list[unit].get_component()
 				p2 = list[unit].categories_to_string()
-				self.warning("different category in same unit. (unit=[%s] comp/cate=[%s]/[%s] => [%s]/[%s])" % (unit, component, " ".jpin(category), p1, p2)
+				self.warning("different category in same unit. (unit=[%s] comp/cate=[%s]/[%s] => [%s]/[%s])" % (unit, component, " ".jpin(category), p1, p2))
 			return False
 		return True
 
-	def check_parent_unit(selt, list. unit, component, category) :
+	def check_parent_unit(selt, list, unit, component, category) :
 		d = os.path.dirname(unit)
 		while d != "" :
 			u = list.get(d)
@@ -131,13 +131,14 @@ class make_mapping :
 		srcdirs = []
 		if len(paths) > 1 :
 			for path in paths :
-				if ("/bin/" in path or "/doc/" in path) \
+				if  ("/bin/" in path) \
+				 or ("/doc/" in path) \
 				 or (component.startswith("lib") and component.endswith(".so") and "/lib/" in path) :
-				 	pass :
-				 else :
-				 	srcdirs.append(path)
+					pass
+				else :
+					srcdirs.append(path)
 			if len(srcdirs) > 1 :
-				self.warning("duplicate paths. (component=[%s] paths=[%s])" % (component, " ".join(srcdirs))
+				self.warning("duplicate paths. (component=[%s] paths=[%s])" % (component, " ".join(srcdirs)))
 			elif len(srcdirs) < 1 :
 				srcdirs = paths
 		else :
@@ -193,7 +194,7 @@ class make_mapping :
 
 				unit = self.find_unit(topdir, component)
 				if unit == "" :
-					self.warning("component not found. (component=[%s] category=[%s])" & (component, " " join(category))
+					self.warning("component not found. (component=[%s] category=[%s])" & (component, " ".join(category)))
 					continue
 
 				if not self.check_duplicate_unit(list, unit, component, category) :
@@ -219,7 +220,7 @@ class make_mapping :
 		list = self.make_complist(argv[1], path)
 		print "コンパイル単位\tシステムブロック\tサブシステム\tサービス群\tサービス\tコンポーネント"
 		for unit in list :
-			print "%s\t%s\t%s" % (unit, "\t".join(list[unit].get_category(), list[unit].get_component())
+			print "%s\t%s\t%s" % (unit, "\t".join(list[unit].get_category(), list[unit].get_component()))
 
 if __name__ == "__main__" :
 	sys.stdout = codecs.getwriter("utf-8")(sys.stdout)

@@ -16,7 +16,7 @@ class find_gcov :
 	CATEGORY_NOT_FOUND = [ "-", "-", "-", "-", "-" ]
 
 #	PATTERN1 = re.compile("(\w*)\t([\w\/]*)\/bin\/([\w\/]*)\t([\S ]*)\t([\S ]*)\t([\S ]*)\t([\S ]*)$")
-	PATTERN2 = re.compile("([\w\/]*)\t([\S ]*)\t([\S ]*)\t([\S ]*)\t([\S ]*)\t(\w\.\-]*$")
+	PATTERN2 = re.compile("([\w\/]*)\t([\S ]*)\t([\S ]*)\t([\S ]*)\t([\S ]*)\t([\w\.\-]*)$")
 
 	PATTERN3 = re.compile("Function '(.*)'")
 	PATTERN4 = re.compile("^Lines executed:([\d\.]+)% ([\d]+)")
@@ -41,7 +41,7 @@ class find_gcov :
 			for rec in ins :
 				rec = rec.strip()
 
-				self.debug("make_projlist: rec=[%s] % rec)
+				self.debug("make_projlist: rec=[%s]" % rec)
 				if len(rec) > 0 and rec[0] == "#" :
 					continue
 
@@ -54,7 +54,7 @@ class find_gcov :
 					self.warning("mapping file format. (rec=[%s])" % rec)
 					continue
 
-				self.debug("make_projlist: unit=[%s] category=[%s] component=[%s]" % (unit. " ".join(category), component))
+				self.debug("make_projlist: unit=[%s] category=[%s] component=[%s]" % (unit, " ".join(category), component))
 				category.append(component)
 				self.CATELIST[unit] = category
 
@@ -68,7 +68,7 @@ class find_gcov :
 			if pos > 0 :
 				self.CAHE_CATEGORY = self.CATELIST[unit]
 				self.CACHE_UNIT = unit
-				self.debug("path_to_category: unit=[%s] category=[%s] % (selt.CACHE_UNIT, " ".join(CACHE_CATEGORY)))
+				self.debug("path_to_category: unit=[%s] category=[%s]" % (selt.CACHE_UNIT, " ".join(CACHE_CATEGORY)))
 				return CACHE_CATEGORY
 
 		self.warning("category not found. (path=[%s]" % path)
@@ -92,7 +92,7 @@ class find_gcov :
 			if result3 :
 				function = result3.group(1)
 				result = self.PATTERN6.match(function)
-				if result ;
+				if result :
 					function = ""
 			elif result4 :
 				self.debug("gcov_csv: function=[%s] coverage=[%s] lines=[%s]" % (function, result4.group(1), result4.grouyp(2)))
@@ -119,7 +119,8 @@ class find_gcov :
 		lines = 0
 
 		with open(path, "r") as wc :
-			for s = s.rstrip("\n") :
+			for s in wc :
+				s = s.rstrip("\n")
 				lines += 1
 				if not comment :
 					if self.PATTERN7.match(s) :
@@ -153,7 +154,7 @@ class find_gcov :
 		print "%s\t%s\t-\t0.0\t%d\t0" % ("\t".join(category), path, execs)
 
 	def find_gcov(self, dir) :
-		find = subprocess([ "find", dir, "-name", "*.gcno" ]. stdout=subprocess.PIPE)
+		find = subprocess([ "find", dir, "-name", "*.gcno" ], stdout=subprocess.PIPE)
 		for rec in iter(find.stdout.readline, b'') :
 			gcno = rec.strip()
 			path = gcno[0 : -5]
@@ -175,7 +176,7 @@ class find_gcov :
 	def __init__(self, argv) :
 		if len(argv) < 3 :
 			print "usage: python %s projfile dir ..." % os.path.basename(argv[0])
-			system.exit(1)
+			sys.exit(1)
 
 		self.make_projlist(argv[1])
 		print "システムブロック\tサブシステム\tサービス群\tサービス\tコンポーネント\tファイルパス\t関数\tcoverage\t対象行数\t実行行数"

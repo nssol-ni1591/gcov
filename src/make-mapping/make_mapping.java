@@ -1,7 +1,9 @@
 // -*- vi: set ts=4 sts=4 sw=4 : -*-
 
+import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -112,7 +114,7 @@ public class make_mapping {
 	}
 
 	public boolean check_parent_unit(Map<String, category_component> list, String unit, String component, String[] category) {
-		Stream.Builer<String> builder = Stream.builder();
+		Stream.Builder<String> builder = Stream.builder();
 		Path d = Paths.get(unit).getParent();
 		while (d != null) {
 			builder.add(d.toString());
@@ -124,7 +126,7 @@ public class make_mapping {
 			.filter(c -> {
 				if (!c.equals_categories(category)) {
 					String p1 = String.join(" ", category);
-					warning("parent unit exists. (component=[%s] unit=[%s] d=[%s] category=[%s]", component, c->get_unit(), d, p1);
+					warning("parent unit exists. (component=[%s] unit=[%s] d=[%s] category=[%s]", component, c.get_unit(), c.get_unit(), p1);
 				}
 				else {
 //					debug("check_parent_unit: skip unit=[%s] component=[%s] d=[%s]", unit, component, d);
@@ -136,11 +138,11 @@ public class make_mapping {
 	}
 
 	public boolean check_child_unit(Map<String, category_component> list, String unit, String component, String[] category) {
-		return (list.ketSet().stream()
+		return (list.keySet().stream()
 			.filter(u -> u.startsWith(unit + "/"))
 			.filter(u -> {
 				if (!list.get(u).equals_categories(category)) {
-					String p1 = String.join(" ", categories);
+					String p1 = String.join(" ", category);
 					warning("child unit exists. (commponent=[%s] unit=[%s] child=[%s] category=[%s]", component, unit, u, p1);
 					return false;
 				}
@@ -160,7 +162,7 @@ public class make_mapping {
 			}
 			return unit;
 		}
-		List<String> paths = new ArtrayList<>();
+		List<String> paths = new ArrayList<>();
 		Process find = Runtime.getRuntime().exec("find " + dir + " -name " + component + " -type f");
 		try (BufferedReader br = new BufferedReader(new InputStreamReader(find.getInputStream()));) {
 			br.lines()
@@ -174,9 +176,9 @@ public class make_mapping {
 		List<String> srcdirs = new ArrayList<>();
 		if (paths.size() > 1) {
 			paths.stream()
-				.filter(path -> !path.constains("/bin/"))
-				.filter(path -> !path.constains("/doc/"))
-				.filter(path -> !(path.constains("/lib/") && component.startsWith("lib") && component.endsWith(".so")))
+				.filter(path -> !path.contains("/bin/"))
+				.filter(path -> !path.contains("/doc/"))
+				.filter(path -> !(path.contains("/lib/") && component.startsWith("lib") && component.endsWith(".so")))
 				.forEach(srcdirs::add);
 			if (srcdirs.size() > 1) {
 				warning("dupulicate paths. (component=[%s] paths=[%s]", component, String.join(" ", srcdirs));
@@ -202,7 +204,7 @@ public class make_mapping {
 			unit = srcdir.toString();
 		}
 		else {
-			int index = srcdir.indexOf("src");
+			int index = srcdir.toString().indexOf("src");
 			if (index > 0) {
 				unit = srcdir.toString().substring(0, index - 1);
 			}
@@ -239,9 +241,9 @@ public class make_mapping {
 				.filter(cc -> !skip_component(cc.get_component()))
 				.map(cc -> {
 					try {
-						String unit = find_unit(topdir, get_component());
+						String unit = find_unit(topdir, cc.get_component());
 						if (unit == null) {
-							warning("component not found. (component=[%s] category=[%s]", get_component(), cc.category_to_string());
+							warning("component not found. (component=[%s] category=[%s]", cc.get_component(), cc.categories_to_string());
 						}
 						cc.set_unit(unit);
 					}

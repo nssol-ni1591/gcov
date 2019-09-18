@@ -2,12 +2,12 @@
 # -*- vi: set ts=4 sts=4 sw=4 : -*-
 
 use strict;
-use warning;
+#use warning;
 use utf8;
 use File::Basename;
 
-binmode STDOUT ":utf8";
-binmode STDERR ":utf8";
+#binmode STDOUT ":utf8";	# why?
+#binmode STDERR ":utf8";	# why?
 
 our %STATIC_MAPPING = (
 	"..." => "...",
@@ -37,7 +37,7 @@ sub categories_to_string {
 
 sub equals_categories {
 	my ($c1, $c2) = @_;
-	my rc = @$c1[0] eq @$c2[0]
+	my $rc = @$c1[0] eq @$c2[0]
 		&& @$c1[1] eq @$c2[1]	# "and" ではwarning...why?
 		&& @$c1[2] eq @$c2[2]
 		&& @$c1[3] eq @$c2[3]
@@ -59,12 +59,12 @@ sub skip_component {
 	my ($c) = @_;
 
 	if ($c =~ /\.(sh|adf|sts|ear|jar)$/) {
-debug "skip_compoent: excluded component=[$c]";
+debug("skip_compoent: excluded component=[$c]");
 		return 1;
 	}
 	for (@SKIP_COMPONENTS) {
 		if ($_ eq $c) {
-debug "skip_compoent: excluded component=[$c]";
+debug("skip_compoent: excluded component=[$c]");
 			return 1;
 		}
 	}
@@ -77,18 +77,18 @@ sub check_duplicate_unit {
 	my @category = @$cate;
 
 	if ($list{$unit}) {
-		if ($component eq get_component \@{$list{$unit}}) {
-			if (!equals_categories \@category, \@{$list{$unit}}) {
-				my $p1 = categories_to_string \@category;
-				my $p2 = categories_to_string \@{$list{$unit}};
-				warning "duplicate components. (component=[$component] category=[$p1] => [$p2])";
+		if ($component eq get_component(\@{$list{$unit}})) {
+			if (!equals_categories(\@category, \@{$list{$unit}})) {
+				my $p1 = categories_to_string(\@category);
+				my $p2 = categories_to_string(\@{$list{$unit}});
+				warning("duplicate components. (component=[$component] category=[$p1] => [$p2])");
 			}
 			return 0;
 		}
-		if (!equals_categories \@category, \@{$list{$unit}}) {
-			my $p1 = get_component \@{$list{$unit}};
-			my $p2 = categories_to_string \@{$list{$unit}};
-			warning "different category in same unit. (unit=[$unit] comp/cate=[$component]/[$category] => [$p1]/[$p2])";
+		if (!equals_categories(\@category, \@{$list{$unit}})) {
+			my $p1 = get_component(\@{$list{$unit}});
+			my $p2 = categories_to_string(\@{$list{$unit}});
+			warning("different category in same unit. (unit=[$unit] comp/cate=[$component]/[@category] => [$p1]/[$p2])");
 		}
 		return 0;
 	}
@@ -104,9 +104,9 @@ sub check_parent_unit {
 	while ($d ne ".") {
 		$d = dirname $d;
 		if ($list{$d}) {
-			if (!equals_categories \@category, \@{$list{$d}}) {
-				my $p1 = categories_to_string \@category;
-				warning "parent unit exists. (component=[$component] unit=[$unit] parent=[$d] categopry=[$p1])";
+			if (!equals_categories(\@category, \@{$list{$d}})) {
+				my $p1 = categories_to_string(\@category);
+				warning("parent unit exists. (component=[$component] unit=[$unit] parent=[$d] categopry=[$p1])");
 			}
 			else {
 #debug "check_parent_unit: skip unit=[$unit] component=[$component] parent=[$d]";
@@ -126,12 +126,12 @@ sub check_child_unit {
 	for (keys %list) {
 		if (/^$unit\//) {
 #debug "exists_child_unit: _=[$_] unit=[$unit] category=[".categories_to_string \@[$list{$_}]."]";
-			if (!equals_categories \@category, \@{list{$_}}) {
-				my $p1 = categories_to_string \@category;
-				warning "child unit exists. (component=[$component] unit=[$unit] child=[$_] category=[$p1]";
+			if (!equals_categories(\@category, \@{list{$_}})) {
+				my $p1 = categories_to_string(\@category);
+				warning("child unit exists. (component=[$component] unit=[$unit] child=[$_] category=[$p1]");
 				$rc = 0;
 			}
-debug "check_child_unit: delete componet=[$component] unit=[$unit] child=[$_ (".(get_component \@{$list{$_}}).")]";
+debug("check_child_unit: delete componet=[$component] unit=[$unit] child=[$_ (".(get_component(\@{$list{$_}})).")]");
 			delete $list2->{$_};
 		}
 	}
@@ -174,7 +174,7 @@ sub find_unit {
 			}
 		}
 		if ($#srcdirs > 0) {
-			warning "duplicate files. (component=[$component] srcdirs=[@srcdirs])";
+			warning("duplicate files. (component=[$component] srcdirs=[@srcdirs])");
 		}
 		elsif ($#srcdirs < 0) {
 			@srcdirs = @paths;
@@ -197,14 +197,14 @@ sub find_unit {
 	else {
 		my $ix = index $srcdir, "src";
 		if ($ix > 0) {
-			$unit = substr $src, 0, $ix - 1;
+			$unit = substr $srcdir, 0, $ix - 1;
 		}
 		else {
 			$unit = $srcdir;
 		}
 	}
 
-debug "find_unit: return unit=[$unit] component=[$component] srcdir=[$srcdir]";
+debug("find_unit: return unit=[$unit] component=[$component] srcdir=[$srcdir]");
 	if (!-d $dir.$unit) {
 		die "Error: unit not exists. (unit=[$unit])\n";
 	}
@@ -222,12 +222,12 @@ sub make_complist {
 		my @category = ();
 		my $component;
 #debug "make_complist: rec=[$_]";
-		if (/^([\S ]*)\t([\S ]*)\t([\S ]*)\t([\S ]*)\t([\S ]*)\t([\w\.-]*\t*$/) {
+		if (/^([\S ]*)\t([\S ]*)\t([\S ]*)\t([\S ]*)\t([\S ]*)\t([\w\.-]*)\t*$/) {
 			@category = ($1, $2, $3. $4);
 			$component = $5;
 		}
 		else {
-			warning "complist file format. (rec=[$rec])";
+			warning("complist file format. (rec=[$_])");
 			next;
 		}
 		next if (!$component or $component eq "0" or $component eq "-");
@@ -235,15 +235,15 @@ sub make_complist {
 
 		my $unit = find_unit $topdir, $component;
 		if (!$unit) {
-			warning "component not found. (component=[$component] category=[$category])";
+			warning("component not found. (component=[$component] category=[@category])");
 			next;
 		}
-		next if (!check_duplicate_unit \%list, $unit, $copmponent, \@category);
-		next if (!check_parent_unit \%list, $unit, $copmponent, \@category);
-		next if (!check_child_unit \%list, $unit, $copmponent, \@category);
+		next if (!check_duplicate_unit(\%list, $unit, $component, \@category));
+		next if (!check_parent_unit(\%list, $unit, $component, \@category));
+		next if (!check_child_unit(\%list, $unit, $component, \@category));
 
-debug "make_complist: add unit=[$unit] component=[$component] category=[$category]";
-		set_component \@category, $component;
+debug("make_complist: add unit=[$unit] component=[$component] category=[@category]");
+		set_component(\@category, $component);
 		@{$list{$unit}} = @category;
 	}
 	close FILE;
