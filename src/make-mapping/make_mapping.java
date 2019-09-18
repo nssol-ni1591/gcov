@@ -31,7 +31,7 @@ public class make_mapping {
 		public String categories_to_string() {
 			return String.join(" ", category);
 		}
-		public boolean equals_categories(String category) {
+		public boolean equals_categories(String[] category) {
 			boolean rc = this.category[0].equals(category[0])
 				&& this.category[1].equals(category[1])
 				&& this.category[2].equals(category[2])
@@ -55,17 +55,17 @@ public class make_mapping {
 
 	private static final Map<String, String> STATIC_MAPPING = new HashMap<String, String>() {
 		{
-			put("...", "..."),
+			put("...", "...");
 		}
 	};
 
 	private final String[] SKIP_COMPONENTS = {
 		"...",
-	}
+	};
 
 	private static final Pattern PATTERN1 = Pattern.compile("^([\\w\\/]*)\\/src\\/(.*)$");
 	private static final Pattern PATTERN2 = Pattern.compile("^([\\S\\ ]*)\\t([\\S\\ ]*)\\t([\\S\\ ]*)\\t([\\S\\ ]*)\\t([\\w\\.-]*)\t*$");
-	private static final Pattern PATTERN1 = Pattern.compile("^\\S*\\.(sh|adf|sts|ear|jar)$");
+	private static final Pattern PATTERN3 = Pattern.compile("^\\S*\\.(sh|adf|sts|ear|jar)$");
 
 	private static void print(String format, Object...args) {
 		System.out.format(format + "\n", args);
@@ -73,7 +73,7 @@ public class make_mapping {
 	private static void debug(String format, Object...args) {
 		print(format, args);
 	}
-	private static void warning(String format, Object...args) [
+	private static void warning(String format, Object...args) {
 		System.err.format(format, args);
 	}
 
@@ -98,7 +98,7 @@ public class make_mapping {
 					String p2 = list.get(unit).categories_to_string();
 					warning("duplicate components. (component=[%s] category=[%s] => [%s]", component, p1, p2);
 				}
-				reeturn false;
+				return false;
 			}
 			if (!list.get(unit).equals_categories(category)) {
 				String p1 = list.get(unit).get_component();
@@ -169,14 +169,14 @@ public class make_mapping {
 				});
 		}
 		if (paths.isEmpty()) {
-			returnm null;
+			return null;
 		}
 		List<String> srcdirs = new ArrayList<>();
 		if (paths.size() > 1) {
 			paths.stream()
 				.filter(path -> !path.constains("/bin/"))
 				.filter(path -> !path.constains("/doc/"))
-				.filter(path -> !(path.constains("/lib/") && component.startsWith("lib") && component.endsWith(".so"))))
+				.filter(path -> !(path.constains("/lib/") && component.startsWith("lib") && component.endsWith(".so")))
 				.forEach(srcdirs::add);
 			if (srcdirs.size() > 1) {
 				warning("dupulicate paths. (component=[%s] paths=[%s]", component, String.join(" ", srcdirs));
@@ -227,7 +227,7 @@ public class make_mapping {
 //					debug(make_complist: rec=[%s]", rec");
 					Matcher result2 = PATTERN2.matcher(rec);
 					if (result2.find()) {
-						String[] category = new String[] { result2.group(1), result2.group(2), result2.group(3), result2.group(4) }
+						String[] category = new String[] { result2.group(1), result2.group(2), result2.group(3), result2.group(4) };
 						String component = result2.group(5);
 						return new category_component(category, component);
 					}
@@ -235,7 +235,7 @@ public class make_mapping {
 					return null;
 				})
 				.filter(Objects::nonNull)
-				.filter(cc -> !(cc.get_component() == null || cc.get_component().equal;s("0") || cc.get_component().equals("-")))
+				.filter(cc -> !(cc.get_component() == null || cc.get_component().equals("0") || cc.get_component().equals("-")))
 				.filter(cc -> !skip_component(cc.get_component()))
 				.map(cc -> {
 					try {
@@ -251,9 +251,9 @@ public class make_mapping {
 					return cc;
 				})
 				.filter(cc -> cc.get_unit() != null)
-				.filter(cc -> check_duplicate_unit(list, cc))
-				.filter(cc -> check_parent_unit(list, cc))
-				.filter(cc -> check_child_unit(list, cc))
+				.filter(cc -> check_duplicate_unit(list, cc.get_unit(), cc.get_component(), cc.get_category()))
+				.filter(cc -> check_parent_unit(list, cc.get_unit(), cc.get_component(), cc.get_category()))
+				.filter(cc -> check_child_unit(list, cc.get_unit(), cc.get_component(), cc.get_category()))
 				.forEach(cc -> {
 					debug("make_complist: add unit=[%s] component=[%s] category=[%s]", cc.get_unit(), cc.get_component(), cc.categories_to_string());
 					list.put(cc.get_unit(), cc);
@@ -272,7 +272,7 @@ public class make_mapping {
 			print("コンパイル単位\tシステムブロック\tサブシステム\tサービス群\tサービス\tコンポーネント");
 			list.keySet().stream()
 				.map(unit -> String.format("%s\t%s\t%s", unit, String.join("\t", list.get(unit).get_category()), list.get(unit).get_component()))
-				.forEach(make_mapping::print)
+				.forEach(make_mapping::print);
 		}
 		catch (Throwable ex) {
 			ex.printStackTrace();
@@ -280,7 +280,7 @@ public class make_mapping {
 	}
 
 	public static void main(String[] argv) {
-		if (argv.size() != 2) {
+		if (argv.length != 2) {
 			print("usage: java %s complist topdir\n", "make_mapping");
 			System.exit(1);
 		}
