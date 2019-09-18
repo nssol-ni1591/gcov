@@ -11,6 +11,7 @@ import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
@@ -68,7 +69,7 @@ public class find_gcov {
 					warning("mapping file format. (rec=[" + rec + "])");
 					return null;
 				})
-				.filter(result -> result != null)
+				.filter(Objects::nonNull)
 				.forEach(result -> {
 					String unit = result.group(1);
 					String[] category = new String[] { result.group(2), result.group(3), result.group(4), result.group(5) };
