@@ -1,16 +1,17 @@
 // -*- vi: set ts=4 sts=4 sw=4 : -*-
 
-import java.io.BuffewrdReader;
+import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optinal;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -81,7 +82,7 @@ public class find_gcov {
 
 	public Pojo path_to_category(String path) {
 		if (CACHE_UNIT != null && path.startsWith(CACHE_UNIT)) {
-			debug("path_to_category: unit=[" + unit + "] category=[" + String.join(" ", category) + "]");
+//			debug("path_to_category: unit=[" + CACHE_UNIT + "] category=[" + String.join(" ", CACHE_UNIT) + "]");
 			return CACHE_CATEGORY;
 		}
 		Optional<String> rc = CATELIST.keySet().stream()
@@ -110,7 +111,7 @@ public class find_gcov {
 			br.lines()	// parallel() is bad
 				.filter(rec -> !rec.equals(""))
 				.filter(rec -> {
-					Matcher reqult3 = PATTERN3.matcher(rec);
+					Matcher result3 = PATTERN3.matcher(rec);
 					if (result3.find()) {
 						function = result3.group(1);
 						Matcher result = PATTERN6.matcher(function);
@@ -122,15 +123,15 @@ public class find_gcov {
 					return false;
 				})
 				.filter(rec-> {
-					matcher result4 = PATTERN4.matcher(rec);
+					Matcher result4 = PATTERN4.matcher(rec);
 					if (result4.find()) {
 						debug("gcov_csv: function=[" + function + "] coverage=[" + result4.group(1) + "] lines=[" + result4.group(2) + "]");
 						double coverage = Double.valueOf(result4.group(1)).doubleValue();
-						int lines = Integer.valueOf(result4.group(2)).intvalue();
+						int lines = Integer.valueOf(result4.group(2)).intValue();
 
 						if (function != null) {
 							Pojo pojo = path_to_category(path);
-							debug("gcov_csv: path=[" + path + "] category=[" + category + "]");
+							debug("gcov_csv: path=[" + path + "] category=[" + pojo + "]");
 							double val = lines * coverage  / 100;
 							int avail = ((int)val) + (val != ((int)val) ? 1 : 0);
 							String[] array = {
@@ -149,7 +150,7 @@ public class find_gcov {
 					return true;
 				})
 				.filter(rec -> !(PATTERN5.matcher(rec).find() && clearFunction()))
-				.filter(rec -> !(rec.equlas("No executable lines") && clearFuntion()))
+				.filter(rec -> !(rec.equals("No executable lines") && clearFunction()))
 				.forEach(rec -> {
 					warning("gcov format. (rec=[" + rec + "])");
 				});
@@ -242,7 +243,7 @@ public class find_gcov {
 			print("Usage: java find_gcov projfile dir ...");
 			System.exit(1);
 		}
-		new fine_gcov(argv);
+		new find_gcov(argv);
 	}
 
 	public class LineManager<T> {
@@ -252,13 +253,13 @@ public class find_gcov {
 		private boolean comment;
 
 		public LineManager(String path) {
-			this.name = Paths.get(path).getFileBane().toString();
+			this.name = Paths.get(path).getFileName().toString();
 			this.lines = 0;
 			this.comment = false;
 		}
 
 		public CommentState<Long, T> apply(T arg) {
-			return new CommentState<>(nextLines(), arg);
+			return new CommentState<Long, T>(this, nextLines(), arg);
 		}
 		public synchronized long nextLines() {
 			return ++lines;
@@ -272,7 +273,7 @@ public class find_gcov {
 
 		public CommentState(LineManager parent, K key, V value) {
 			super(key, value);
-			this.paremt = parent;
+			this.parent = parent;
 		}
 
 		public V statement() {
@@ -317,7 +318,7 @@ public class find_gcov {
 			return component;
 		}
 
-		public booelan equals(String[] category) {
+		public boolean equals(String[] category) {
 			return this.category[0] == category[0]
 				&& this.category[1] == category[1]
 				&& this.category[2] == category[2]
