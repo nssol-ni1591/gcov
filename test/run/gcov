@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# cmd = "LANG=C gcov -r -p -n -f %s | c++filt" % path
+#echo argv=$*
+
+while getopts "rpnf:" OPT
+do
+	case $OPT in
+	f)	OPT_F=$OPTARG ;;
+	*)	;;
+    esac
+done
+
+cat $OPT_F
+

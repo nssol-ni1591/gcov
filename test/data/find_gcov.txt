@@ -1,0 +1,20 @@
+システムブロック	サブシステム	サービス群	サービス	コンポーネント	ファイルパス	関数	coverage	対象行数	実行行数
+フロント・ミドル（OBS）	IDSSIF	市場情報Reuters	外部IF_Reuters_SnapShot	rorManager	C:/Users/godo/git-local/gcov/test/mrkt/ror/src/AppClient.cpp	AppClient::getServiceName()	100.0	2	2
+フロント・ミドル（OBS）	IDSSIF	市場情報Reuters	外部IF_Reuters_SnapShot	rorManager	C:/Users/godo/git-local/gcov/test/mrkt/ror/src/AppClient.cpp	AppClient::request(thomsonreuters::ema::access::ReqMsg&)	38.89	18	8
+フロント・ミドル（OBS）	IDSSIF	市場情報Reuters	外部IF_Reuters_SnapShot	rorManager	C:/Users/godo/git-local/gcov/test/mrkt/ror/src/AppClient.cpp	AppClient::errorNotification(char const*, thomsonreuters::ema::access::OmmState::DataState, unsigned char, char const*)	0.0	4	0
+フロント・ミドル（OBS）	IDSSIF	市場情報Reuters	外部IF_Reuters_SnapShot	rorManager	C:/Users/godo/git-local/gcov/test/mrkt/ror/src/AppClient.cpp	AppClient::decode(thomsonreuters::ema::access::EmaString const&, thomsonreuters::ema::access::OmmState const*, thomsonreuters::ema::access::FieldList const&)	0.0	8	0
+フロント・ミドル（OBS）	IDSSIF	市場情報Reuters	外部IF_Reuters_SnapShot	rorManager	C:/Users/godo/git-local/gcov/test/mrkt/ror/src/AppClient.cpp	AppClient::decode(thomsonreuters::ema::access::Msg const&, thomsonreuters::ema::access::OmmState const*, bool)	62.5	8	5
+フロント・ミドル（OBS）	IDSSIF	市場情報Reuters	外部IF_Reuters_SnapShot	rorManager	C:/Users/godo/git-local/gcov/test/mrkt/ror/src/AppClient.cpp	AppClient::onStatusMsg(thomsonreuters::ema::access::StatusMsg const&, thomsonreuters::ema::access::OmmConsumerEvent const&)	75.0	20	15
+フロント・ミドル（OBS）	IDSSIF	市場情報Reuters	外部IF_Reuters_SnapShot	rorManager	C:/Users/godo/git-local/gcov/test/mrkt/ror/src/AppClient.cpp	AppClient::onUpdateMsg(thomsonreuters::ema::access::UpdateMsg const&, thomsonreuters::ema::access::OmmConsumerEvent const&)	0.0	14	0
+フロント・ミドル（OBS）	IDSSIF	市場情報Reuters	外部IF_Reuters_SnapShot	rorManager	C:/Users/godo/git-local/gcov/test/mrkt/ror/src/AppClient.cpp	AppClient::onRefreshMsg(thomsonreuters::ema::access::RefreshMsg const&, thomsonreuters::ema::access::OmmConsumerEvent const&)	68.75	16	11
+フロント・ミドル（OBS）	IDSSIF	市場情報Reuters	外部IF_Reuters_SnapShot	rorManager	C:/Users/godo/git-local/gcov/test/mrkt/ror/src/AppClient.cpp	AppClient::getStatus()	0.0	2	0
+フロント・ミドル（OBS）	IDSSIF	市場情報Reuters	外部IF_Reuters_SnapShot	rorManager	C:/Users/godo/git-local/gcov/test/mrkt/ror/src/AppClient.cpp	AppClient::stop()	0.0	7	0
+フロント・ミドル（OBS）	IDSSIF	市場情報Reuters	外部IF_Reuters_SnapShot	rorManager	C:/Users/godo/git-local/gcov/test/mrkt/ror/src/AppClient.cpp	AppClient::~AppClient()	0.0	2	0
+フロント・ミドル（OBS）	IDSSIF	市場情報Reuters	外部IF_Reuters_SnapShot	rorManager	C:/Users/godo/git-local/gcov/test/mrkt/ror/src/AppClient.cpp	AppClient::~AppClient()	99.99	2	2
+フロント・ミドル（OBS）	IDSSIF	市場情報Reuters	外部IF_Reuters_SnapShot	rorManager	C:/Users/godo/git-local/gcov/test/mrkt/ror/src/AppClient.cpp	AppClient::AppClient(thomsonreuters::ema::access::OmmConsumer*, char const*)	100.0	4	4
+フロント・ミドル（OBS）	IDSSIF	市場情報Reuters	外部IF_Reuters_SnapShot	rorManager	C:/Users/godo/git-local/gcov/test/mrkt/ror/src/AppClient.cpp	AppClient::c_str() const	100.0	2	2
+フロント・ミドル（OBS）	IDSSIF	市場情報Reuters	外部IF_Reuters_SnapShot	rorManager	C:/Users/godo/git-local/gcov/test/mrkt/ror/src/RorManager.cpp	RorManager::snapshot(InternalInfoTable_*)	54.55	11	7
+フロント・ミドル（OBS）	IDSSIF	市場情報Reuters	外部IF_Reuters_SnapShot	rorManager	C:/Users/godo/git-local/gcov/test/mrkt/ror/src/RorManager.cpp	RorManager::~RorManager()	100.0	2	2
+フロント・ミドル（OBS）	IDSSIF	市場情報Reuters	外部IF_Reuters_SnapShot	rorManager	C:/Users/godo/git-local/gcov/test/mrkt/ror/src/RorManager.cpp	RorManager::RorManager()	100.0	2	2
+フロント・ミドル（OBS）	IDSSIF	市場情報Reuters	外部IF_Reuters_SnapShot	rorManager	C:/Users/godo/git-local/gcov/test/mrkt/ror/src/RorManager.cpp	Manager::dictionary(char**, unsigned long)	0.0	2	0
+フロント・ミドル（OBS）	IDSSIF	市場情報Reuters	外部IF_Reuters_SnapShot	rorManager	C:/Users/godo/git-local/gcov/test/mrkt/ror/src/RorManager.cpp	Manager::snapshot()	0.0	2	0

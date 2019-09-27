@@ -1,0 +1,8 @@
+コンパイル単位	システムブロック	サブシステム	サービス群	サービス	コンポーネント
+src/find-gcov	git	gcov	src	find-gcov	find_gcov.java
+test/data	git	gcov	test	data	products.txt
+test/mrkt/rgw	フロント・ミドル（OBS）	IDSSIF	市場情報Reuters	外部IF_Reuters	MktRag
+src/make-mapping	git	gcov	src	make-mapping	make_mapping.java
+src/sum-gcov	git	gcov	src	sum-gcov	sum_gcov.py
+test/gcov	git	gcov	test	gcov	AppClient.o.log
+test/mrkt/ror	フロント・ミドル（OBS）	IDSSIF	市場情報Reuters	外部IF_Reuters_SnapShot	rorManager
